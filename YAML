@@ -1,0 +1,33 @@
+name: Auto Fetch Shopee Image Links
+
+on:
+  workflow_dispatch: # 支持在 GitHub 页面上手动点击按钮运行
+
+jobs:
+  fetch-links:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+
+    - name: Run Fetch Script
+      run: python fetch_links.py
+
+    - name: Commit and push generated links
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add image_links.txt
+        git commit -m "Auto: Update shopee image links" || exit 0
+        git push
